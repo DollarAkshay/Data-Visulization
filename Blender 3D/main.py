@@ -7,11 +7,13 @@ import random
 import time
 
 rand_seed = 69
+
+random.seed(rand_seed)
 # rand_seed = time.time()
 print(f"\n\nSeed: {rand_seed}")
 C = bpy.context
 D = bpy.data
-noise = PerlinNoise(8, seed=rand_seed)
+noise = PerlinNoise(6, seed=rand_seed)
 
 # A function to clear the scene
 
@@ -76,8 +78,13 @@ def setup_lighting():
 def setup_scene():
     # bpy.ops.mesh.primitive_plane_add(size=10000, location=(0, 0, -1))
 
-    bpy.ops.object.camera_add(location=(-8, -5, 50),
-                              rotation=(1.0402175188064575, 0, -0.8168151378631592))
+    bpy.ops.object.camera_add(location=(142.30224609375, 124.80343627929688, 74.3753662109375),
+                              rotation=(1.2217527627944946, 0, -4.119001388549805))
+
+
+# Add a glare node
+def compositing():
+    C.scene.use_nodes = True
 
 
 # Main Code
@@ -142,16 +149,16 @@ material_2 = D.materials.new('Emission 1')
 material_2.use_nodes = True
 bsdf = material_2.node_tree.nodes["Principled BSDF"].inputs
 bsdf['Base Color'].default_value = (0.0, 0.0, 0.0, 1.0)
-bsdf['Emission'].default_value = (0.8, 0.251839, 0.0169132, 1)
-bsdf['Emission Strength'].default_value = 8
+bsdf['Emission'].default_value = (0.8, 0.134104, 0.0165925, 1)
+bsdf['Emission Strength'].default_value = 12
 
 # Create a simple redish-purple emission material
 material_3 = D.materials.new('Emission 2')
 material_3.use_nodes = True
 bsdf = material_3.node_tree.nodes["Principled BSDF"].inputs
 bsdf['Base Color'].default_value = (0.0, 0.0, 0.0, 1.0)
-bsdf['Emission'].default_value = (0.5, 0.00655472, 0.0124761, 1)
-bsdf['Emission Strength'].default_value = 8
+bsdf['Emission'].default_value = (0.8, 0.0104876, 0.0246989, 1)
+bsdf['Emission Strength'].default_value = 10
 
 
 cube_object.data.materials.append(material_1)
@@ -162,7 +169,7 @@ cube_object.data.materials.append(material_3)
 # Apply the material to random cubes
 cube_count = grid_size[0] * grid_size[1]
 
-mat_2_perc = 0.004
+mat_2_perc = 0.007
 cubes = random.sample(range(cube_count), round(cube_count * mat_2_perc))
 for c in cubes:
     for i in range(6):
@@ -176,6 +183,8 @@ for c in cubes:
 
 
 modifier = cube_object.modifiers.new(name="BEVEL", type='BEVEL')
+modifier.show_viewport = False
+modifier.show_render = True
 modifier.width = 0.1
 modifier.segments = 4
 
